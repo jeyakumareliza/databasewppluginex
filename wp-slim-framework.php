@@ -12,6 +12,7 @@
 require_once 'Slim/Slim.php';
 require_once 'SlimWpOptions.php';
 
+
 \Slim\Slim::registerAutoloader();
 new \Slim\SlimWpOptions();
 
@@ -27,6 +28,13 @@ add_action('init', function () {
     if (strstr($_SERVER['REQUEST_URI'], get_option('slim_base_path','slim/api/'))) {
         $slim = new \Slim\Slim();
         do_action('slim_mapping',$slim);
+        $slim->get('/slim/api/user/:u',function($user){
+            printf("User is %s",$user);            
+        });
+        $slim->get('/slim/api/test', function(){
+            global $wpdb, $table_prefix;
+            echo json_encode($wpdb->get_results( $wpdb->prepare("SELECT * FROM " . $table_prefix . "test", null) ));
+        });
         $slim->run();
         exit;
     }
